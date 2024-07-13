@@ -1,4 +1,5 @@
-﻿namespace ArcVera_Tech_Test
+﻿
+namespace ArcVera_Tech_Test
 {
     partial class frmMain
     {
@@ -34,7 +35,9 @@
             btnExportExcel = new Button();
             dgImportedEra5 = new DataGridView();
             plotView1 = new OxyPlot.WindowsForms.PlotView();
+            dataGridView1 = new DataGridView();
             ((System.ComponentModel.ISupportInitialize)dgImportedEra5).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
             // btnImportEra5
@@ -87,11 +90,20 @@
             plotView1.ZoomRectangleCursor = Cursors.SizeNWSE;
             plotView1.ZoomVerticalCursor = Cursors.SizeNS;
             // 
+            // dataGridView1
+            // 
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Location = new Point(605, 288);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.Size = new Size(270, 236);
+            dataGridView1.TabIndex = 5;
+            // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1175, 584);
+            Controls.Add(dataGridView1);
             Controls.Add(plotView1);
             Controls.Add(dgImportedEra5);
             Controls.Add(btnExportExcel);
@@ -99,8 +111,15 @@
             Controls.Add(btnImportEra5);
             Name = "frmMain";
             Text = "WindSpeed Reader";
+            Load += frmMain_Load;
             ((System.ComponentModel.ISupportInitialize)dgImportedEra5).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
+        }
+
+        private void BtnExportExcel_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -110,5 +129,6 @@
         private Button btnExportExcel;
         private DataGridView dgImportedEra5;
         private OxyPlot.WindowsForms.PlotView plotView1;
+        private DataGridView dataGridView1;
     }
 }
