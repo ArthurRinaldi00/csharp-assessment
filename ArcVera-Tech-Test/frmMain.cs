@@ -8,6 +8,7 @@ using DataColumn = System.Data.DataColumn;
 using OxyPlot.Axes;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Windows.Forms;
+using Parquet.Meta;
 
 namespace ArcVera_Tech_Test
 {
@@ -52,7 +53,7 @@ namespace ArcVera_Tech_Test
                             {
                                 if (!dataTable.Columns.Contains(field.Name))
                                 {
-                                    Type columnType = field.HasNulls ? typeof(object) : field.ClrType;
+                                    System.Type columnType = field.HasNulls ? typeof(object) : field.ClrType;
                                     dataTable.Columns.Add(field.Name, columnType);
                                 }
 
@@ -93,6 +94,7 @@ namespace ArcVera_Tech_Test
             foreach (var data in groupedData)
             {
                 lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(data.Date), data.U10Average));
+
             }
 
             plotModel.Series.Add(lineSeries);
@@ -121,7 +123,7 @@ namespace ArcVera_Tech_Test
             try
             {
                 DataTable dt = GetDataTableFromDataGridView(dgImportedEra5);
-                ExportToCSV.Export(dt, "C:\\Users\\arthur\\Downloads\\arquivo.csv", 50);
+                ExportToCSV.Export(dt, "C:\\Users\\arthur\\Downloads\\arquivo.csv");
                 MessageBox.Show("Csv Exportado com Sucesso");
             }
             catch (Exception ex)
@@ -132,16 +134,14 @@ namespace ArcVera_Tech_Test
 
         public static class ExportToCSV
         {
-            public static void Export(DataTable dt, string filePath, int maxRows = 50)
+            public static void Export(DataTable dt, string filePath)
             {
                 using (StreamWriter sw = new StreamWriter(filePath))
                 {
                     var columnNames = dt.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
                     sw.WriteLine(string.Join(",", columnNames));
 
-                    int rowsToExport = Math.Min(dt.Rows.Count, maxRows);
-
-                    for (int i = 0; i < rowsToExport; i++)
+                    for (int i = 0; i < 50; i++)
                     {
                         var fields = dt.Rows[i].ItemArray.Select(field => field.ToString());
                         sw.WriteLine(string.Join(",", fields));
@@ -174,7 +174,7 @@ namespace ArcVera_Tech_Test
             public static void Export(DataTable dt, string filePath)
             {
                 Excel.Application excelApp = new Excel.Application();
-                Excel.Workbook workbook = excelApp.Workbooks.Add(Type.Missing);
+                Excel.Workbook workbook = excelApp.Workbooks.Add(System.Type.Missing);
                 Excel.Worksheet worksheet = workbook.Sheets[1];
                 worksheet = workbook.ActiveSheet;
                 worksheet.Name = "January-era5";
@@ -184,11 +184,21 @@ namespace ArcVera_Tech_Test
                     worksheet.Cells[1, i] = dt.Columns[i - 1].ColumnName;
                 }
 
-                for (int i = 0; i < dt.Rows.Count; i++)
+                //dt.Rows.Count
+                for (int i = 0; i < 50; i++)
                 {
                     for (int j = 0; j < dt.Columns.Count; j++)
                     {
-                        worksheet.Cells[i + 2, j + 1] = dt.Rows[i][j].ToString();
+                        var cell = worksheet.Cells[i + 2, j + 1];
+                        cell.Value = dt.Rows[i][j].ToString();
+
+                        if (double.TryParse(dt.Rows[i][j].ToString(), out double cellValue))
+                        {
+                            if (dt.Columns[j].ColumnName == "u10" && cellValue < 0)
+                            {
+                                cell.Interior.Color = Excel.XlRgbColor.rgbRed;
+                            }
+                        }
                     }
                 }
 
